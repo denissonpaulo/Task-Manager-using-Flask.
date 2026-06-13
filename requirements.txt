@@ -1,0 +1,8 @@
+Flask>=2.3.2
+Flask-Bcrypt
+Flask-Login
+Flask-SQLAlchemy
+Flask-WTF
+WTForms
+Jinja2>=3.1.2
+Werkzeug
