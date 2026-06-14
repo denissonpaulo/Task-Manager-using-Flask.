@@ -25,13 +25,13 @@ jobs:
      pip install -r requirements.txt
 
 # === NOVO STAGE: ANÁLISE ESTÁTICA DE CÓDIGO (SAST) ===
-  - name: Run SAST Security Scan (Bandit)
+  - name: Run SAST Security Scan (Bandit - OWASP ASV Core)
     run: |
      pip install bandit
      bandit -r todo_project/ -f txt || echo "Avisos de vulnerabilidade encontrados"
 
 # === NOVO STAGE: ANÁLISE DE DEPENDÊNCIAS ===
-  - name: Run Dependency Vulnerability Audit
+  - name: Run OWASP Dependency-Check Vulnerability Audit (pip-audit)
     run: |
      pip install pip-audit
      pip-audit -r requirements.txt || echo "Dependências antigas detectadas"
