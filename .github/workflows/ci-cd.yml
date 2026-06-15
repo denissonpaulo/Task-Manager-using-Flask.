@@ -89,3 +89,4 @@ jobs:
      with:
       target: 'https://www.zaproxy.org' # Usamos o alvo de teste do próprio ZAP no pipeline em nuvem para não expor IPs locais vazios
       fail_action: false
+      artifacts_name: 'zap-security-report'
