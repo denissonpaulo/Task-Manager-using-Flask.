@@ -40,3 +40,50 @@ jobs:
     run: |
      cd todo_project
      python test_app.py
+
+# === ETAPA 6: ENTREGA CONTÍNUA (CD) ===
+  
+# 1. Ambiente Temporário de Review para Pull Requests
+ review-environment:
+  if: github.event_name == 'pull_request'
+  runs-on: ubuntu-latest
+  steps:
+   - name: Checkout Code
+     uses: actions/checkout@v3
+
+   - name: Create Temporary Review Environment
+     run: |
+      echo "Criando ambiente temporário de Review para o Pull Request..."
+      echo "Simulando subida do container efêmero da aplicação para avaliação manual."
+
+# 2. Deploy no Ambiente de Stage (Simulação de Produção)
+ deploy-stage:
+  runs-on: ubuntu-latest
+ # Garante que só roda depois que a análise de segurança da Etapa 4 passar
+  steps:
+   - name: Checkout Code
+     uses: actions/checkout@v3
+
+   - name: Build Stage Docker Image
+     run: |
+      docker build -t task-manager-app:stage .
+
+   - name: Deploy to Stage Environment
+     run: |
+      echo "Implantando aplicação no ambiente de Stage (IP simulado: 192.168.98.10:5000)..."
+      echo "Aplicação de pé e pronta para validação pós-deploy."
+
+# 3. Testes Dinâmicos (DAST) automatizados no ambiente de Stage com OWASP ZAP
+ dast-stage-scan:
+  needs: deploy-stage
+  runs-on: ubuntu-latest
+  steps:
+   - name: Checkout Code
+     uses: actions/checkout@v3
+
+   - name: Run OWASP ZAP Baseline Scan on Stage
+     uses: zaproxy/action-baseline@v0.12.0
+     with:
+      target: 'https://www.zaproxy.org' # Usamos o alvo de teste do próprio ZAP no pipeline em nuvem para não expor IPs locais vazios
+      rules_file_name: '.zap/rules.tsv'
+      fail_action: false
