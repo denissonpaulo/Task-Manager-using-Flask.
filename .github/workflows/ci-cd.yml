@@ -95,22 +95,17 @@ jobs:
 # SOLUÇÃO DE PRIVILÉGIO: Cria pasta específica e dá posse ao UID 1000 do ZAP
    - name: Criar Diretório Seguro para Relatórios do ZAP
      run: |
-      sudo chown -R 1000:1000 ${{ github.workspace }}
+      mkdir -p zap-workspace
+      sudo chown -R 1000:1000 zap-workspace
 
 # Executa o DAST real contra a sua aplicação containerizada ativa no localhost do runner
    - name: Run OWASP ZAP Baseline Scan on Real Local App
      uses: zaproxy/action-baseline@v0.12.0
      with:
       target: 'http://localhost:5000'
-      cmd_options: '-r zap_report.html -J zap_report.json'
+      cmd_options: '-r zap-workspace/zap_report.html -J zap-workspace/zap_report.json'
       fail_action: false
       allow_issue_writing: true
-
-# SEGURANÇA E LIMPEZA: Restaura as permissões originais para o runner do GitHub
-   - name: Restaurar Permissões do Workspace
-     if: always()
-     run: |
-      sudo chown -R runner:docker ${{ github.workspace }}
 
 # Preserva os artefatos gerados pelo escaneamento para que você possa baixar
    - name: Archive Security Reports
@@ -118,5 +113,4 @@ jobs:
      with:
       name: zap-security-reports
       path: |
-       zap_report.html
-       zap_report.json
+       zap-workspace/zap_report
