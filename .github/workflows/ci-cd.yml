@@ -5,6 +5,7 @@ on:
   branches: [ "development", "staging", "production" ]
  pull_request:
   branches: [ "development", "staging", "production" ]
+ workflow_dispatch:
 
 # =====================================================================
 # JOB 1: COMPILAÇÃO, TESTES E ANÁLISE ESTÁTICA (SAST & SCA)
