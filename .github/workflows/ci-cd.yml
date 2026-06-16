@@ -92,11 +92,10 @@ jobs:
       timeout 30s sh -c 'until curl -s http://localhost:5000 > /dev/null; do sleep 2; done'
       echo "Aplicação de pé e respondendo com sucesso em http://localhost:5000!"
 
-# SOLUÇÃO DE PRIVILÉGIO: Cria pasta específica e dá posse ao UID 1000 do ZAP (Sem chmod 777!)
-   - name: Criar Diretório Seguro para Relatórios (Sem chmod 777)
+# SOLUÇÃO DE PRIVILÉGIO: Cria pasta específica e dá posse ao UID 1000 do ZAP
+   - name: Criar Diretório Seguro para Relatórios do ZAP
      run: |
-      mkdir -p zap-workspace
-      sudo chown -R 1000:1000 zap-workspace
+      sudo chown -R 1000:1000 ${{ github.workspace }}
 
 # Executa o DAST real contra a sua aplicação containerizada ativa no localhost do runner
    - name: Run OWASP ZAP Baseline Scan on Real Local App
@@ -107,9 +106,17 @@ jobs:
       fail_action: false
       allow_issue_writing: true
 
+# SEGURANÇA E LIMPEZA: Restaura as permissões originais para o runner do GitHub
+   - name: Restaurar Permissões do Workspace
+     if: always()
+     run: |
+      sudo chown -R runner:docker ${{ github.workspace }}
+
 # Preserva os artefatos gerados pelo escaneamento para que você possa baixar
    - name: Archive Security Reports
      uses: actions/upload-artifact@v4
      with:
       name: zap-security-reports
-      path: zap-workspace/
+      path: |
+       zap_report.html
+       zap_report.json
